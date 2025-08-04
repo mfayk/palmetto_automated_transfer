@@ -49,7 +49,7 @@ def compute_diff(dir_base, dir_cmp):
 
 
 """""
-path = '/Users/max/Documents/biofilm'
+path = '/Users/----/Documents/biofilm'
 files = []
 subdirs = []
 
