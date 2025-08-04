@@ -15,7 +15,7 @@ import shutil
 
 
 #get client ID from globus online you need this to be able to access globus transfer
-CLIENT_ID = "8641b548-8e95-4708-af68-6af6212931b2"
+CLIENT_ID = "----------------"
 auth_client = globus_sdk.NativeAppAuthClient(CLIENT_ID)
 
 
@@ -51,7 +51,7 @@ def do_submit(client):
 transfer_client = login_and_get_transfer_client()
 
 
-TRANSFER_FOLDER = 'C:/Users/rfratus/Documents/oct/transfer' 
+TRANSFER_FOLDER = 'C:/Users/---/Documents/oct/transfer' 
 
 #local path
 path = 'C:/Users/rfratus/Documents/oct/Test' 
@@ -100,8 +100,8 @@ while(1):
 
 
         task_data.add_item(
-            "/C/Users/rfratus/Documents/oct/Test",  # source
-            "/project/jonccal/ecocoat/data/oct/Test",
+            "/C/Users/-----/Documents/oct/Test",  # source
+            "/project/-----/ecocoat/data/oct/Test",
             recursive=True
         )
             
@@ -159,7 +159,7 @@ while(1):
         for f in file_set:
             f = f.replace("\\\\", "\\")
             print(f)
-            os.remove('C:\\Users\\rfratus\\Documents\\oct\\transfer' + f)
+            os.remove('C:\\Users\\------\\Documents\\oct\\transfer' + f)
 
 
         for f in os.walk(TRANSFER_FOLDER,topdown=False):
