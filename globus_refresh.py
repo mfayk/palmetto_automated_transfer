@@ -10,13 +10,12 @@ from utils_folder import compute_dir_index
 from utils_folder import compute_diff
 import getpass
 import os
-USER_NAME = getpass.getuser()
+import shutil
 
 
 
 #get client ID from globus online you need this to be able to access globus transfer
-CLIENT_ID = ""
-CLIENT_ID = ""
+CLIENT_ID = "8641b548-8e95-4708-af68-6af6212931b2"
 auth_client = globus_sdk.NativeAppAuthClient(CLIENT_ID)
 
 
@@ -52,9 +51,10 @@ def do_submit(client):
 transfer_client = login_and_get_transfer_client()
 
 
+TRANSFER_FOLDER = 'C:/Users/rfratus/Documents/oct/transfer' 
+
 #local path
-path = '/Users/max/Documents/biofilm'
-#path = 'Users/max/Documents/comp_bio/0'
+path = 'C:/Users/rfratus/Documents/oct/Test' 
 files = []
 subdirs = []
 
@@ -78,72 +78,30 @@ flag1 = 0
 print("watching for file changes")
 while(1):
 
+
+    for root, dirs, files in os.walk(path):
+        for name in files:
+            if name.endswith((".oct", ".tiff", ".raw", ".tif")):
+                destss = shutil.move(root + '/' + name, TRANSFER_FOLDER)
+                print(destss)
+
     #here detects when a change occured, functions are in utils folder
-    diff2 = compute_dir_index(path)
+    diff2 = compute_dir_index(TRANSFER_FOLDER)
     data = compute_diff(diff2, diff)
 
-    #here is the auto delete folders/files logic
-    if (flag1 == 1111 and bool(data.get('created')) == False and bool(data.get('updated')) == False):
-        root_dir = path
-        file_set = set()
-
-        for dir_, _, files in os.walk(root_dir):
-            for file_name in files:
-                rel_dir = os.path.relpath(dir_, root_dir)
-                rel_file = os.path.join(rel_dir, file_name)
-                file_set.add(rel_file)
-            
-        print(file_set)
-
-        for f in file_set:
-            f = f.replace("\\\\", "\\")
-            print(f)
-            os.remove('C:\\Users\\max\\Documents\\biofilm\\' + f)
-
-
-        for f in os.walk(path,topdown=False):
-
-            rdir = f[0]
-            rdir = rdir.replace("\\\\", "\\")
-            print(rdir)
-
-            if rdir != path:
-                os.rmdir('C:' + rdir)
-        flag1 = 0
-
-    
 
     #this triggers if files are created or updated in the folder
     if(bool(data.get('created')) == True or bool(data.get('updated')) == True):
         
         # create a Transfer task consisting of one or more items
-        flag1 = 1111
         task_data = globus_sdk.TransferData(
-            source_endpoint="", destination_endpoint=""
+            source_endpoint="b192e704-5d64-11ee-8775-1dc3121de006", destination_endpoint="33fdf1d5-7b1c-4a21-8d3b-dd4b48d60dfa"
         )
 
 
-        checking = 1
-        while checking == 1:
-            checking = 0
-            for root, dirs, files in os.walk(path):
-                for name in files:
-                    if name.endswith((".oct", ".tiff", ".raw", ".tif")):
-                        print(name)
-                    else:
-                        print("possible temp file: ")
-                        print(name)
-                        time.sleep(5)
-                        checking = 1
-
-
-
-
         task_data.add_item(
-            "/C/Users/max/Documents/biofilm/",  # source
-            #"/C/Users/max/Documents/comp_bio/8",  # source
-            "/scratch/mfaykus/Bio_Film",
-            # "/zfs/ecocoat/",  # destination
+            "/C/Users/rfratus/Documents/oct/Test",  # source
+            "/project/jonccal/ecocoat/data/oct/Test",
             recursive=True
         )
             
@@ -184,3 +142,33 @@ while(1):
             print(f"Job ID: {task_id} minute of transferring")
         print("Transfer Complete")
         print("--- %s seconds ---" % (time.time() - start_time))
+
+
+        #transfer is complete deleting files
+        root_dir = TRANSFER_FOLDER
+        file_set = set()
+
+        for dir_, _, files in os.walk(root_dir):
+            for file_name in files:
+                rel_dir = os.path.relpath(dir_, root_dir)
+                rel_file = os.path.join(rel_dir, file_name)
+                file_set.add(rel_file)
+            
+        print(file_set)
+
+        for f in file_set:
+            f = f.replace("\\\\", "\\")
+            print(f)
+            os.remove('C:\\Users\\rfratus\\Documents\\oct\\transfer' + f)
+
+
+        for f in os.walk(TRANSFER_FOLDER,topdown=False):
+
+            rdir = f[0]
+            rdir = rdir.replace("\\\\", "\\")
+            print(rdir)
+
+            if rdir != TRANSFER_FOLDER:
+                os.rmdir('C:' + rdir)
+
+    
